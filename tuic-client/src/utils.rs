@@ -30,7 +30,11 @@ pub fn load_certs(paths: Vec<PathBuf>, disable_native: bool) -> Result<RootCertS
     }
 
     if !disable_native {
-        for cert in rustls_native_certs::load_native_certs().map_err(Error::LoadNativeCerts)? {
+        let load_certs_result = rustls_native_certs::load_native_certs();
+        for err in load_certs_result.errors {
+            Err(Error::LoadNativeCerts(err))?;
+        }
+        for cert in load_certs_result.certs {
             let _ = certs.add(cert);
         }
     }

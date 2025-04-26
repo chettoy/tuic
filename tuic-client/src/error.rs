@@ -1,5 +1,6 @@
 use quinn::{ConnectError, ConnectionError};
 use rustls::Error as RustlsError;
+use rustls_native_certs::Error as CertsError;
 use std::io::Error as IoError;
 use thiserror::Error;
 use tuic_quinn::Error as ModelError;
@@ -13,7 +14,7 @@ pub enum Error {
     #[error(transparent)]
     Model(#[from] ModelError),
     #[error("load native certificates error: {0}")]
-    LoadNativeCerts(IoError),
+    LoadNativeCerts(CertsError),
     #[error(transparent)]
     Rustls(#[from] RustlsError),
     #[error("{0}: {1}")]
