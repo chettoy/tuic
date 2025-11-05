@@ -7,23 +7,23 @@ use crossbeam_utils::atomic::AtomicCell;
 use once_cell::sync::OnceCell;
 use parking_lot::Mutex;
 use quinn::{
-    congestion::{BbrConfig, CubicConfig, NewRenoConfig},
-    crypto::rustls::QuicClientConfig,
     ClientConfig, Connection as QuinnConnection, Endpoint as QuinnEndpoint, EndpointConfig,
     TokioRuntime, TransportConfig, VarInt, ZeroRttAccepted,
+    congestion::{BbrConfig, CubicConfig, NewRenoConfig},
+    crypto::rustls::QuicClientConfig,
 };
 use register_count::Counter;
 use rustls::ClientConfig as RustlsClientConfig;
 use std::{
     net::{Ipv4Addr, Ipv6Addr, SocketAddr, UdpSocket},
-    sync::{atomic::AtomicU32, Arc},
+    sync::{Arc, atomic::AtomicU32},
     time::Duration,
 };
 use tokio::{
     sync::{Mutex as AsyncMutex, OnceCell as AsyncOnceCell},
     time,
 };
-use tuic_quinn::{side, Connection as Model};
+use tuic_quinn::{Connection as Model, side};
 use uuid::Uuid;
 
 mod handle_stream;
@@ -257,9 +257,9 @@ impl Endpoint {
         for addr in self.server.resolve().await? {
             let connect_to = async {
                 let match_ipv4 =
-                    addr.is_ipv4() && self.ep.local_addr().map_or(false, |addr| addr.is_ipv4());
+                    addr.is_ipv4() && self.ep.local_addr().is_ok_and(|addr| addr.is_ipv4());
                 let match_ipv6 =
-                    addr.is_ipv6() && self.ep.local_addr().map_or(false, |addr| addr.is_ipv6());
+                    addr.is_ipv6() && self.ep.local_addr().is_ok_and(|addr| addr.is_ipv6());
 
                 if !match_ipv4 && !match_ipv6 {
                     let bind_addr = if addr.is_ipv4() {

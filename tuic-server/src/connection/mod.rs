@@ -6,11 +6,11 @@ use quinn::{Connecting, Connection as QuinnConnection, VarInt};
 use register_count::Counter;
 use std::{
     collections::HashMap,
-    sync::{atomic::AtomicU32, Arc},
+    sync::{Arc, atomic::AtomicU32},
     time::Duration,
 };
 use tokio::time;
-use tuic_quinn::{side, Authenticate, Connection as Model};
+use tuic_quinn::{Authenticate, Connection as Model, side};
 use uuid::Uuid;
 
 mod authenticated;
@@ -163,7 +163,7 @@ impl Connection {
         } else if self
             .users
             .get(&auth.uuid())
-            .map_or(false, |password| auth.validate(password))
+            .is_some_and(|password| auth.validate(password))
         {
             self.auth.set(auth.uuid());
             Ok(())

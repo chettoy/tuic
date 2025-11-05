@@ -1,6 +1,6 @@
 use super::{
-    side::{self, Side},
     Assemblable, AssembleError, UdpSessions,
+    side::{self, Side},
 };
 use crate::{Address, Header, Packet as PacketHeader};
 use parking_lot::Mutex;
@@ -288,10 +288,7 @@ where
                 &[]
             } else {
                 let payload_ptr = &(self.payload.as_ref()[self.next_frag_start]) as *const u8;
-                let payload = unsafe {
-                    slice::from_raw_parts(payload_ptr, next_frag_end - self.next_frag_start)
-                };
-                payload
+                unsafe { slice::from_raw_parts(payload_ptr, next_frag_end - self.next_frag_start) }
             };
 
             self.next_frag_id += 1;

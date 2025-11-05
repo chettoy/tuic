@@ -1,5 +1,5 @@
 use crate::error::Error;
-use rustls::{pki_types::CertificateDer, RootCertStore};
+use rustls::{RootCertStore, pki_types::CertificateDer};
 use rustls_pemfile::Item;
 use std::{
     fs::{self, File},
@@ -31,7 +31,7 @@ pub fn load_certs(paths: Vec<PathBuf>, disable_native: bool) -> Result<RootCertS
 
     if !disable_native {
         let load_certs_result = rustls_native_certs::load_native_certs();
-        for err in load_certs_result.errors {
+        if let Some(err) = load_certs_result.errors.into_iter().next() {
             Err(Error::LoadNativeCerts(err))?;
         }
         for cert in load_certs_result.certs {

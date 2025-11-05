@@ -5,8 +5,8 @@ authors = ["EAimTY <ea.imty@gmail.com>"]
 description = "Minimalistic TUIC server implementation as a reference"
 categories = ["network-programming"]
 keywords = ["network", "proxy", "quic", "tuic"]
-edition = "2021"
-rust-version = "1.65.0"
+edition = "2024"
+rust-version = "1.91.0"
 readme = "README.md"
 license = "GPL-3.0-or-later"
 repository = "https://github.com/EAimTY/tuic"
@@ -22,10 +22,10 @@ parking_lot = { version = "0.12.3", default-features = false }
 quinn = { version = "0.11.7", default-features = false, features = ["futures-io", "runtime-tokio", "rustls"] }
 register-count = { version = "0.1.0", default-features = false, features = ["std"] }
 rustls = { version = "0.23.26", default-features = false }
-rustls-pemfile = { version = "2.2.0", default-features = false }
+rustls-pemfile = { version = "2.2.0", default-features = false, features = ["std"] }
 serde = { version = "1.0.219", default-features = false, features = ["derive", "std"] }
 serde_json = { version = "1.0.140", default-features = false, features = ["std"] }
-socket2 = { version = "0.5.9", default-features = false }
+socket2 = { version = "0.6.1", default-features = false }
 thiserror = { version = "2.0.12", default-features = false }
 tokio = { version = "1.44.2", default-features = false, features = ["io-util", "macros", "net", "parking_lot", "rt-multi-thread", "time"] }
 tokio-util = { version = "0.7.15", default-features = false, features = ["compat"] }

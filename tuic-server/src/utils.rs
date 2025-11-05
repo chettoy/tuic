@@ -8,18 +8,26 @@ use std::{
 };
 
 pub fn load_certs(path: PathBuf) -> Result<Vec<CertificateDer<'static>>, IoError> {
-    let certs = if path.extension().map_or(false, |x| x == "der") {
+    let certs = if path.extension().is_some_and(|x| x == "der") {
         vec![CertificateDer::from(fs::read(&path)?)]
     } else {
         let mut file = BufReader::new(File::open(&path)?);
-        rustls_pemfile::certs(&mut file).collect::<Result<_, _>>()?
+        rustls_pemfile::read_all(&mut file)
+            .map(|item| {
+                if let rustls_pemfile::Item::X509Certificate(certificate_der) = item? {
+                    Ok(certificate_der)
+                } else {
+                    Err(IoError::other("not a x509 certificate"))
+                }
+            })
+            .collect::<Result<_, _>>()?
     };
 
     Ok(certs)
 }
 
 pub fn load_priv_key(path: PathBuf) -> Result<PrivateKeyDer<'static>, IoError> {
-    let priv_key = if path.extension().map_or(false, |x| x == "der") {
+    let priv_key = if path.extension().is_some_and(|x| x == "der") {
         PrivateKeyDer::Pkcs8(PrivatePkcs8KeyDer::from(fs::read(&path)?))
     } else {
         let mut file = BufReader::new(File::open(&path)?);
